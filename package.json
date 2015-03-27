@@ -1,0 +1,18 @@
+{
+  "name": "cybersafe-trustbroker",
+  "version": "1.0.0",
+  "description": "Cybersafe TrustBroker",
+  "main": "index.js",
+  "scripts": {
+    "test": "istanbul cover _mocha -- -R spec"
+  },
+  "author": "Kidozen",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^3.6.0",
+    "mem-cache": "0.0.4",
+    "sap-api": "^1.x",
+    "simple-errors": "^1.0.1",
+    "winston": "^0.9.0"
+  }
+}
