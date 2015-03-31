@@ -2,7 +2,7 @@
 
 require("simple-errors");
 var _               = require("lodash");
-var modulePath      = process.argv.indexOf("mockSap") > -1 ? "../test/mockSap.js" : "./Sap.js";
+var modulePath      = process.argv.indexOf("mockSap") > -1 ? "../test/mockSap.js" : "sap-api/lib/sap.js";
 var Sap             = require(modulePath);
 var Cache           = require("mem-cache");
 
@@ -12,19 +12,15 @@ var SSO2 = "SSO2";
 var CLAIM_SAM_ACCOUNT_NAME = "claim-sam-account-name";
 var CLAIM_DOMAIN_NAME = "claim-domain-name";
 
-module.exports.create = function (config, cb) {
-    if (!config || typeof config !== "object") return cb(new Error("configuration is missing or invalid."));
+module.exports.create = function (config) {
+    if (!config || typeof config !== "object") throw new Error("configuration is missing or invalid.");
 
-    if (!config[CLAIM_SAM_ACCOUNT_NAME] || typeof config[CLAIM_SAM_ACCOUNT_NAME] !== "string") return cb(new Error("property '" + CLAIM_SAM_ACCOUNT_NAME + "' is missing."));
-    if (!config[CLAIM_DOMAIN_NAME] || typeof config[CLAIM_DOMAIN_NAME] !== "string") return cb(new Error("property '" + CLAIM_DOMAIN_NAME + "' is missing."));
+    if (!config[CLAIM_SAM_ACCOUNT_NAME] || typeof config[CLAIM_SAM_ACCOUNT_NAME] !== "string") throw new Error("property '" + CLAIM_SAM_ACCOUNT_NAME + "' is missing.");
+    if (!config[CLAIM_DOMAIN_NAME] || typeof config[CLAIM_DOMAIN_NAME] !== "string") throw new Error("property '" + CLAIM_DOMAIN_NAME + "' is missing.");
 
-    if (config.connectionType !== TRUSTED && config.connectionType !== SSO2) return cb(new Error("property 'connectionType' is missing or has an invalid value."));
+    if (config.connectionType !== TRUSTED && config.connectionType !== SSO2) throw new Error("property 'connectionType' is missing or has an invalid value.");
 
-    try {
-        cb(null, new TrustBroker(config));
-    } catch (e) {
-        cb(e);
-    }
+    return new TrustBroker(config);
 };
 
 function TrustBroker(config) {
@@ -36,7 +32,7 @@ function TrustBroker(config) {
     var getCredentialFromSap = config.connectionType === TRUSTED ? getCredentialForTrusted : getCredentialForSso2;
 
 
-    this.getSapCredential = function (methodName, options, cb) {
+    this.getSapCredential = function (options, cb) {
         logger.verbose("'Invoke' was received - invoking getCredential");
         getCredential(options, function (err1, credential) {
 
